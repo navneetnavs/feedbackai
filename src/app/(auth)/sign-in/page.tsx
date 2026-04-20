@@ -47,15 +47,15 @@ const SignInPage = () => {
     if (result?.error) {
       toast({
         title: "Sign in failed",
-        description: "Invalid credentials",
+        description: result.error === "CredentialsSignin" ? "Invalid credentials" : result.error,
       });
+      setIsSubmitting(false);
     } else {
       toast({
         title: "Signed in successfully",
       });
+      router.replace("/dashboard");
     }
-    setIsSubmitting(false);
-    router.replace("/dashboard");
   };
 
   return (
