@@ -4,8 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
-import { ApiResponse } from "@/types/ApiResponse";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -25,7 +23,6 @@ import Link from "next/link";
 const SignInPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const router = useRouter();
 
   //zod implementation
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -39,22 +36,20 @@ const SignInPage = () => {
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     setIsSubmitting(true);
     const result = await signIn("credentials", {
-      redirect: false,
+      redirect: true,
+      callbackUrl: "/dashboard",
       identifier: data.email,
       password: data.password,
     });
 
+    // This code won't run on success because redirect: true handles it
+    // Only runs if there's an error before redirect
     if (result?.error) {
       toast({
         title: "Sign in failed",
         description: result.error === "CredentialsSignin" ? "Invalid credentials" : result.error,
       });
       setIsSubmitting(false);
-    } else {
-      toast({
-        title: "Signed in successfully",
-      });
-      router.replace("/dashboard");
     }
   };
 
